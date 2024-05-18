@@ -1,9 +1,12 @@
 package com.yangche.gatewayservice.service.impl;
 
+import com.yangche.gatewayservice.model.Role;
 import com.yangche.gatewayservice.model.User;
 import com.yangche.gatewayservice.model.to.RegisterTO;
+import com.yangche.gatewayservice.repository.IRoleRepo;
 import com.yangche.gatewayservice.repository.IUserRepo;
 import com.yangche.gatewayservice.service.UserService;
+import java.util.List;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -12,11 +15,14 @@ public class UserServiceImpl implements UserService {
 
     private final IUserRepo userRepo;
 
+    private final IRoleRepo roleRepo;
+
     private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(IUserRepo userRepo, PasswordEncoder passwordEncoder) {
+    public UserServiceImpl(IUserRepo userRepo, PasswordEncoder passwordEncoder, IRoleRepo roleRepo) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
+        this.roleRepo = roleRepo;
     }
 
     @Override
@@ -39,5 +45,10 @@ public class UserServiceImpl implements UserService {
     @Override
     public User getUserByUsername(String username) {
         return userRepo.findByUserName(username);
+    }
+
+    @Override
+    public List<Role> getRoleByUserId(Long id) {
+        return roleRepo.findByUserId(id);
     }
 }

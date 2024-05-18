@@ -8,3 +8,15 @@ spring:
     username: root
     password: 06494784
     driver-class-name: com.mysql.cj.jdbc.Driver
+  jpa:
+    show-sql: true
+    properties:
+      hibernate:
+        format_sql: true
+logging:
+  level:
+    org:
+      hibernate:
+        type:
+          descriptor:
+            spl: trace

@@ -1,9 +1,11 @@
 package com.yangche.gatewayservice.config.security;
 
+import com.yangche.gatewayservice.model.Role;
 import com.yangche.gatewayservice.service.UserService;
 import java.util.ArrayList;
 import java.util.List;
 import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.User;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -25,7 +27,16 @@ public class UserDetailService implements UserDetailsService {
         if (user == null) {
             throw new UsernameNotFoundException(username);
         }
-        List<GrantedAuthority> authorities = new ArrayList<>();
+        List<Role> roleList = userService.getRoleByUserId(user.getUserId());
+        List<GrantedAuthority> authorities = convertToAuthorities(roleList);
         return new User(user.getUsername(), user.getPassword(), authorities);
+    }
+
+    private List<GrantedAuthority> convertToAuthorities(List<Role> roleList) {
+        List<GrantedAuthority> authorities = new ArrayList<>();
+        for (Role role : roleList) {
+            authorities.add(new SimpleGrantedAuthority(role.getRoleType()));
+        }
+        return authorities;
     }
 }
