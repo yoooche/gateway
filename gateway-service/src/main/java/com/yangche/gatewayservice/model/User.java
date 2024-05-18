@@ -36,9 +36,6 @@ public class User {
     @Column(name = "PHONE")
     private String phone;
 
-    @Column(name = "TYPE")
-    private int type;
-
     @Column(name = "VERSION")
     private int version;
 
