@@ -7,8 +7,10 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.Table;
-import java.sql.Timestamp;
+import java.time.LocalDateTime;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 @Data
 @Entity
@@ -39,9 +41,11 @@ public class User {
     @Column(name = "VERSION")
     private int version;
 
-    @Column(name = "CREATE_TIME")
-    private Timestamp createTime;
+    @Column(name = "CREATE_TIME", updatable = false)
+    @CreationTimestamp
+    private LocalDateTime createTime;
 
     @Column(name = "UPDATE_TIME")
-    private Timestamp updateTime;
+    @UpdateTimestamp
+    private LocalDateTime updateTime;
 }

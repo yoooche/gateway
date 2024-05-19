@@ -15,5 +15,6 @@ public interface IRoleRepo extends JpaRepository<Role, Long> {
             + "WHERE U.USER_ID = :userId", nativeQuery = true)
     List<Role> findByUserId(Long userId);
 
-
+    @Query("select r.roleId from Role r where r.roleType = ?1")
+    Long findIdByRoleType(String roleType);
 }

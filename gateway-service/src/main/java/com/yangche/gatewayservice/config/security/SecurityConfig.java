@@ -38,6 +38,8 @@ public class SecurityConfig {
                         .requestMatchers("/user/login").authenticated()
                         .requestMatchers("/event/list").hasAnyRole("ADMIN", "NORMAL", "PAID")
                         .requestMatchers("/event/favorite").hasAnyRole("ADMIN", "PAID")
+                        .requestMatchers("/subscribe").hasAnyRole("NORMAL")
+                        .requestMatchers("/subscribe/remove").hasAnyRole("NORMAL")
                         .anyRequest().denyAll()
                 ).build();
     }
