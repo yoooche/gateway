@@ -16,5 +16,5 @@ public interface IRoleRepo extends JpaRepository<Role, Long> {
     List<Role> findByUserId(Long userId);
 
     @Query("select r.roleId from Role r where r.roleType = ?1")
-    Integer findIdByRoleType(String roleType);
+    Long findIdByRoleType(String roleType);
 }
