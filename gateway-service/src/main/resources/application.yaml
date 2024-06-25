@@ -13,10 +13,20 @@ spring:
     properties:
       hibernate:
         format_sql: true
+  cloud:
+    loadbalancer:
+      enabled: true
 logging:
   level:
+    org.springframework.cloud.loadbalancer: DEBUG
+    org.springframework.cloud.netflix.eureka: DEBUG
+    org.springframework.cloud.openfeign: DEBUG
     org:
       hibernate:
         type:
           descriptor:
             spl: trace
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:10086/eureka

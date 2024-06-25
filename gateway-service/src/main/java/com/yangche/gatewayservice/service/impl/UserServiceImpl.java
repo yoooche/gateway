@@ -2,6 +2,7 @@ package com.yangche.gatewayservice.service.impl;
 
 import static com.yangche.gatewayservice.constant.RoleType.*;
 
+import com.yangche.gatewayservice.client.UserClient;
 import com.yangche.gatewayservice.model.Role;
 import com.yangche.gatewayservice.model.User;
 import com.yangche.gatewayservice.model.UserRole;
@@ -26,16 +27,20 @@ public class UserServiceImpl implements UserService {
 
     private final PasswordEncoder passwordEncoder;
 
-    public UserServiceImpl(IUserRepo userRepo, PasswordEncoder passwordEncoder, IRoleRepo roleRepo, IUserRoleRepo userRoleRepo) {
+    private final UserClient userClient;
+
+    public UserServiceImpl(IUserRepo userRepo, PasswordEncoder passwordEncoder,
+            IRoleRepo roleRepo, IUserRoleRepo userRoleRepo, UserClient userClient) {
         this.userRepo = userRepo;
         this.passwordEncoder = passwordEncoder;
         this.roleRepo = roleRepo;
         this.userRoleRepo = userRoleRepo;
+        this.userClient = userClient;
     }
 
     @Override
     public User getUserInfo(Long id) {
-        return userRepo.findByUserId(id);
+        return userClient.getUserById(id);
     }
 
     @Override

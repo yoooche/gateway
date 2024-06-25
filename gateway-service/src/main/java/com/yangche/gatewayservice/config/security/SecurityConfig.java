@@ -49,6 +49,7 @@ public class SecurityConfig {
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/user/register").permitAll()
                         .requestMatchers("/user/login").authenticated()
+                        .requestMatchers("/user").permitAll()
                         .requestMatchers("/event/list").hasAnyRole("ADMIN", "NORMAL", "PAID")
                         .requestMatchers("/event/favorite").hasAnyRole("ADMIN", "PAID")
                         .requestMatchers("/subscribe").hasAnyRole("NORMAL")
