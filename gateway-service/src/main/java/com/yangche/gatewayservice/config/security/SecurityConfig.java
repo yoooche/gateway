@@ -1,10 +1,13 @@
 package com.yangche.gatewayservice.config.security;
 
+import com.yangche.gatewayservice.config.filter.JwtAuthFilter;
 import com.yangche.gatewayservice.config.filter.LoginFilter;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.Customizer;
+import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.core.GrantedAuthorityDefaults;
@@ -12,6 +15,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
@@ -44,11 +48,12 @@ public class SecurityConfig {
                         .ignoringRequestMatchers("/user/register", "/user/login"))
                 .cors(cors -> cors.configurationSource(createCorsConfig()))
                 .addFilterBefore(new LoginFilter(), BasicAuthenticationFilter.class)
+                .addFilterBefore(new JwtAuthFilter(), UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(Customizer.withDefaults())
                 .formLogin(Customizer.withDefaults())
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/user/register").permitAll()
-                        .requestMatchers("/user/login").authenticated()
+                        .requestMatchers("/user/login").permitAll()
                         .requestMatchers("/user").permitAll()
                         .requestMatchers("/event/list").hasAnyRole("ADMIN", "NORMAL", "PAID")
                         .requestMatchers("/event/favorite").hasAnyRole("ADMIN", "PAID")
@@ -60,7 +65,7 @@ public class SecurityConfig {
 
     private CorsConfigurationSource createCorsConfig() {
         CorsConfiguration config = new CorsConfiguration();
-        config.setAllowedOrigins(List.of("http://example.com"));
+        config.setAllowedOrigins(List.of("*"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowedMethods(List.of("*"));
         config.setAllowCredentials(true);
@@ -74,5 +79,10 @@ public class SecurityConfig {
         CsrfTokenRequestAttributeHandler handler = new CsrfTokenRequestAttributeHandler();
         handler.setCsrfRequestAttributeName(null);
         return handler;
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
+        return authenticationConfiguration.getAuthenticationManager();
     }
 }

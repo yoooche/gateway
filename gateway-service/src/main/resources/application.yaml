@@ -13,9 +13,16 @@ spring:
     properties:
       hibernate:
         format_sql: true
-  cloud:
-    loadbalancer:
-      enabled: true
+#  cloud:
+#    gateway:
+#      routes:
+#        - id: user-service # router identification -> unique
+#          uri: lb://user-service # router target
+#          predicates: # request whether match the rule of route
+#            - Path=/user/** # verify the request whether start with this path or not
+  main:
+    web-application-type: reactive
+    allow-bean-definition-overriding: true
 logging:
   level:
     org.springframework.cloud.loadbalancer: DEBUG
@@ -30,3 +37,7 @@ eureka:
   client:
     service-url:
       defaultZone: http://localhost:10086/eureka
+
+jwt:
+  secret: test
+  expiration: 3600
