@@ -55,7 +55,7 @@ public class UserServiceImpl implements UserService {
         user.setAddress(to.getAddress());
         userRepo.saveAndFlush(user);
 
-        var roleId = roleRepo.findIdByRoleType(NORMAL.name());
+        var roleId = roleRepo.findIdByRoleType(NORMAL);
         UserRole userRole = new UserRole();
         userRole.setRoleId(roleId);
         userRole.setUserId(user.getUserId());

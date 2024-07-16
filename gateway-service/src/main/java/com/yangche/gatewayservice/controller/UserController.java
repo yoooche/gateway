@@ -27,16 +27,10 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/user")
 public class UserController {
 
-    private final AuthenticationManager authenticationManager;
-
-    private final JwtUtil jwtUtil;
-
     private final UserService userService;
 
-    public UserController(UserService userService, AuthenticationManager authenticationManager, JwtUtil jwtUtil) {
+    public UserController(UserService userService) {
         this.userService = userService;
-        this.authenticationManager = authenticationManager;
-        this.jwtUtil = jwtUtil;
     }
 
     @GetMapping
@@ -50,21 +44,11 @@ public class UserController {
         return "註冊成功";
     }
 
-//    @PostMapping("/login")
-//    public String login(Authentication authentication) {
-//        var username = authentication.getName();
-//        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
-//        return "登入成功！帳號 " + username + " 的權限為: " + authorities;
-//    }
-
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody UserLoginTO userLoginTO) {
-        Authentication authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(userLoginTO.getUsername(), userLoginTO.getPassword()));
-        SecurityContextHolder.getContext().setAuthentication(authentication);
-        UserDetails userDetails = (UserDetails) authentication.getPrincipal();
-        String token = jwtUtil.generateToken(userDetails);
-        return ResponseEntity.ok(token);
+    public String login(Authentication authentication) {
+        var username = authentication.getName();
+        Collection<? extends GrantedAuthority> authorities = authentication.getAuthorities();
+        return "登入成功！帳號 " + username + " 的權限為: " + authorities;
     }
 
 }

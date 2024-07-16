@@ -1,7 +1,7 @@
 package com.yangche.gatewayservice.config.security;
 
-import com.yangche.gatewayservice.config.filter.JwtAuthFilter;
-import com.yangche.gatewayservice.config.filter.LoginFilter;
+import static com.yangche.gatewayservice.constant.RoleType.*;
+
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -15,8 +15,6 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
-import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
-import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
 import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
@@ -42,23 +40,24 @@ public class SecurityConfig {
         return http
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+
                 .csrf(csrf -> csrf
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
                         .csrfTokenRequestHandler(createCsrfHandler())
                         .ignoringRequestMatchers("/user/register", "/user/login"))
+
                 .cors(cors -> cors.configurationSource(createCorsConfig()))
-                .addFilterBefore(new LoginFilter(), BasicAuthenticationFilter.class)
-                .addFilterBefore(new JwtAuthFilter(), UsernamePasswordAuthenticationFilter.class)
                 .httpBasic(Customizer.withDefaults())
                 .formLogin(Customizer.withDefaults())
+
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/user/register").permitAll()
                         .requestMatchers("/user/login").permitAll()
                         .requestMatchers("/user").permitAll()
-                        .requestMatchers("/event/list").hasAnyRole("ADMIN", "NORMAL", "PAID")
-                        .requestMatchers("/event/favorite").hasAnyRole("ADMIN", "PAID")
-                        .requestMatchers("/subscribe").hasAnyRole("NORMAL")
-                        .requestMatchers("/subscribe/remove").hasAnyRole("NORMAL")
+                        .requestMatchers("/event/list").hasAnyRole(ADMIN, NORMAL, PAID)
+                        .requestMatchers("/event/favorite").hasAnyRole(ADMIN, PAID)
+                        .requestMatchers("/subscribe").hasAnyRole(NORMAL)
+                        .requestMatchers("/subscribe/remove").hasAnyRole(NORMAL)
                         .anyRequest().denyAll()
                 ).build();
     }

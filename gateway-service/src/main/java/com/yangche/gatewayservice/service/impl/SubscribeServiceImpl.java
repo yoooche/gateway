@@ -31,7 +31,7 @@ public class SubscribeServiceImpl implements SubscribeService {
         if (checkIfSubscribe(roleList)) {
             return "Subscribed";
         }
-        var roleId = roleRepo.findIdByRoleType(PAID.name());
+        var roleId = roleRepo.findIdByRoleType(PAID);
         UserRole userRole = new UserRole();
         userRole.setUserId(to.getUserId());
         userRole.setRoleId(roleId);
@@ -43,7 +43,7 @@ public class SubscribeServiceImpl implements SubscribeService {
     @Transactional
     public String unsubscribe(SubscribeTO to) {
         var roleList = roleRepo.findByUserId(to.getUserId());
-        var roleId = roleRepo.findIdByRoleType(PAID.name());
+        var roleId = roleRepo.findIdByRoleType(PAID);
         if (checkIfSubscribe(roleList)) {
             userRoleRepo.deleteByRoleIdAndUserId(roleId, to.getUserId());
             return "Unsubscribed successfully by userId: " + to.getUserId();
@@ -54,6 +54,6 @@ public class SubscribeServiceImpl implements SubscribeService {
     private boolean checkIfSubscribe(List<Role> roleList) {
         return roleList.stream()
                 .map(Role::getRoleType)
-                .anyMatch(roleType -> roleType.equals(PAID.name()));
+                .anyMatch(roleType -> roleType.equals(PAID));
     }
 }

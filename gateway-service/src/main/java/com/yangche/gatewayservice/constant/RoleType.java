@@ -1,7 +1,7 @@
 package com.yangche.gatewayservice.constant;
 
-public enum RoleType {
-    ADMIN,
-    NORMAL,
-    PAID
+public interface RoleType {
+    String ADMIN = "ADMIN";
+    String NORMAL = "NORMAL";
+    String PAID = "PAID";
 }
