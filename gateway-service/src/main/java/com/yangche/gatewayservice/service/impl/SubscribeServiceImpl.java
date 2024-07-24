@@ -12,7 +12,6 @@ import java.util.List;
 import org.springframework.security.access.prepost.PostAuthorize;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
-import org.springframework.security.core.Authentication;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
@@ -64,19 +63,10 @@ public class SubscribeServiceImpl implements SubscribeService {
     }
 
     private void refreshAuthentication(SubscribeTO to) {
-        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
-        if (!authentication.getAuthorities().contains(new SimpleGrantedAuthority(PAID))) {
-            var updatedAuthorities = roleRepo.findByUserId(to.getUserId()).stream()
-                    .map(role -> new SimpleGrantedAuthority(role.getRoleType()))
-                    .toList();
-            Authentication newAuth = new UsernamePasswordAuthenticationToken(authentication.getPrincipal(),
-                    authentication.getCredentials(), updatedAuthorities);
-            SecurityContextHolder.getContext().setAuthentication(newAuth);
-        }
+        var authentication = SecurityContextHolder.getContext().getAuthentication();
         var updatedAuthorities = roleRepo.findByUserId(to.getUserId()).stream()
-                .map(role -> new SimpleGrantedAuthority(role.getRoleType()))
-                .toList();
-        Authentication newAuth = new UsernamePasswordAuthenticationToken(authentication.getPrincipal(),
+                .map(role -> new SimpleGrantedAuthority(role.getRoleType())).toList();
+        var newAuth = new UsernamePasswordAuthenticationToken(authentication.getPrincipal(),
                 authentication.getCredentials(), updatedAuthorities);
         SecurityContextHolder.getContext().setAuthentication(newAuth);
     }
