@@ -2,6 +2,7 @@ package com.yangche.gatewayservice.config.security;
 
 import static com.yangche.gatewayservice.constant.RoleType.*;
 
+import com.yangche.gatewayservice.controller.filter.LoginFilter;
 import java.util.List;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -17,6 +18,8 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
 import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
@@ -24,7 +27,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 
 @Configuration
 @EnableMethodSecurity
-@EnableWebSecurity
+@EnableWebSecurity(debug = true)
 public class SecurityConfig {
 
     @Bean
@@ -43,20 +46,28 @@ public class SecurityConfig {
                 .sessionManagement(session -> session
                         .sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
 
-                .csrf(csrf -> csrf.disable())
+                .csrf(csrf -> csrf
+                        .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse())
+                        .csrfTokenRequestHandler(createCsrfHandler())
+                        .ignoringRequestMatchers("/user/register", "/user/login")
+                )
 
-                .cors(cors -> cors.configurationSource(createCorsConfig()))
+
                 .httpBasic(Customizer.withDefaults())
 
+                .addFilterBefore(new LoginFilter(), BasicAuthenticationFilter.class)
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/user/register", "/user/login").permitAll()
                         .requestMatchers("/user/**").authenticated()
-                        .requestMatchers(HttpMethod.GET, "/event/list").permitAll()
+                        .requestMatchers(HttpMethod.GET, "/event/list").authenticated()
                         .requestMatchers("/event/favorite").hasAnyRole(ADMIN, PAID)
                         .requestMatchers("/subscribe").hasAnyRole(NORMAL)
                         .requestMatchers("/subscribe/remove").hasAnyRole(NORMAL)
                         .anyRequest().denyAll()
-                ).build();
+
+                )
+                .cors(cors -> cors.configurationSource(createCorsConfig()))
+                .build();
     }
 
     private CorsConfigurationSource createCorsConfig() {
@@ -64,7 +75,8 @@ public class SecurityConfig {
         config.setAllowedOrigins(List.of("*"));
         config.setAllowedHeaders(List.of("*"));
         config.setAllowedMethods(List.of("*"));
-        config.setAllowCredentials(true);
+//        config.setAllowCredentials(true);
+        config.setMaxAge(3600L);
 
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", config);
